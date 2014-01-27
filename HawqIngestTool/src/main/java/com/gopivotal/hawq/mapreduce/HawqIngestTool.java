@@ -83,7 +83,6 @@ public class HawqIngestTool extends AbstractMapReduceDriver {
 	@Override
 	protected Class<? extends Writable> getOutputValueClass() {
 		return NullWritable.class;
-
 	}
 
 	@SuppressWarnings("static-access")

@@ -15,13 +15,16 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 /**
  * An extension of TextInputFormat that will combine files together to make
  * larger input splits.
+ * 
+ * Use {@link CombineTextInputFormat#setMaxSplitSize(long)} to set the file
+ * size, in bytes, that is ideal.
  */
 public class CombineTextInputFormat extends
 		CombineFileInputFormat<LongWritable, Text> {
 
 	@Override
-	public RecordReader<LongWritable, Text> createRecordReader(InputSplit arg0,
-			TaskAttemptContext arg1) throws IOException {
+	public RecordReader<LongWritable, Text> createRecordReader(
+			InputSplit split, TaskAttemptContext context) throws IOException {
 		return new CombineLineRecordReader();
 	}
 
@@ -52,8 +55,6 @@ public class CombineTextInputFormat extends
 				if (rdr.nextKeyValue()) {
 					return true;
 				} else if (currentSplit < split.getNumPaths()) {
-					System.out.println(currentSplit + "\t"
-							+ split.getNumPaths());
 					initializeNextReader();
 				} else {
 					return false;

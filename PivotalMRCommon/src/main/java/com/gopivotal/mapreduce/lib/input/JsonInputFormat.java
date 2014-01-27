@@ -4,12 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -24,6 +26,17 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.gopivotal.io.JsonStreamReader;
 
+/**
+ * The JsonInputFormat will read two types of JSON formatted data. The default
+ * expectation is each JSON record is newline delimited. This method is
+ * generally faster and is backed by the {@link LineRecordReader) you are likely
+ * familiar with. The other method is 'pretty print' of JSON records, where
+ * records span multiple lines and often have some type of root identifier. This
+ * method is likely slower, but respects record boundaries much like the
+ * LineRecordReader.<br>
+ * <br>
+ * Use of the 'pretty print' reader requires a record identifier.
+ */
 public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 
 	private static JsonFactory factory = new JsonFactory();
@@ -37,7 +50,7 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 			InputSplit split, TaskAttemptContext context) throws IOException,
 			InterruptedException {
 		RecordReader<Text, NullWritable> rdr;
-		if (context.getConfiguration().getBoolean(ONE_RECORD_PER_LINE, false)) {
+		if (context.getConfiguration().getBoolean(ONE_RECORD_PER_LINE, true)) {
 			rdr = new SimpleJsonRecordReader();
 		} else {
 			return new JsonRecordReader();
@@ -46,6 +59,10 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 		return rdr;
 	}
 
+	/**
+	 * This class uses the {@link LineRecordReader} to read a line of JSON and
+	 * return it as a Text object.
+	 */
 	public static class SimpleJsonRecordReader extends
 			RecordReader<Text, NullWritable> {
 
@@ -93,6 +110,13 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 		}
 	}
 
+	/**
+	 * This class uses the {@link JsonStreamReader} to read JSON records from a
+	 * file. It respects split boundaries to complete full JSON records, as
+	 * specified by the root identifier. This class will discard any records
+	 * that it was unable to decode using
+	 * {@link JsonInputFormat#decodeLineToJsonNode(String)}
+	 */
 	public static class JsonRecordReader extends
 			RecordReader<Text, NullWritable> {
 
@@ -111,7 +135,6 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 				throws IOException, InterruptedException {
 
 			this.identifier = context.getConfiguration().get(RECORD_IDENTIFIER);
-			log.info("Identifier is " + this.identifier);
 
 			if (this.identifier == null || identifier.isEmpty()) {
 				throw new InvalidParameterException(
@@ -135,16 +158,12 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 			FSDataInputStream strm = FileSystem.get(context.getConfiguration())
 					.open(file);
 
-			log.info("Retrieved file stream ");
-
 			if (start != 0) {
 				strm.seek(start);
 			}
 
 			rdr = new JsonStreamReader(identifier,
 					new BufferedInputStream(strm));
-
-			log.info("Reader is " + rdr);
 		}
 
 		@Override
@@ -156,8 +175,6 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 				String record = rdr.getJsonRecord();
 				if (record != null) {
 					if (JsonInputFormat.decodeLineToJsonNode(record) == null) {
-						log.error("Unable to parse JSON string.  Skipping. DEBUG to see");
-						log.debug(record);
 						keepGoing = true;
 					} else {
 						outkey.set(record);
@@ -191,6 +208,14 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 		}
 	}
 
+	/**
+	 * Decodes a given string of text to a {@link JsonNode}.
+	 * 
+	 * @param line
+	 *            The line of text
+	 * @return The JsonNode or null if a JsonParseException,
+	 *         JsonMappingException, or IOException error occurs
+	 */
 	public static synchronized JsonNode decodeLineToJsonNode(String line) {
 
 		try {
@@ -205,5 +230,58 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Sets the input format to use the {@link SimpleJsonRecordReader} if true,
+	 * otherwise {@link JsonRecordReader}.<br>
+	 * <br>
+	 * Default is true.
+	 * 
+	 * @param job
+	 *            The job to configure
+	 * @param isOneRecordPerLine
+	 *            True if JSON records are new line delimited, false otherwise.
+	 */
+	public static void setOneRecordPerLine(Job job, boolean isOneRecordPerLine) {
+		job.getConfiguration().setBoolean(ONE_RECORD_PER_LINE,
+				isOneRecordPerLine);
+	}
+
+	/**
+	 * Gets if this is configured as one JSON record per line.
+	 * 
+	 * @param conf
+	 *            the Job configuration
+	 * @return True if one JSON record per line, false otherwise.
+	 */
+	public static boolean getOneRecordPerLine(Configuration conf) {
+		return conf.getBoolean(ONE_RECORD_PER_LINE, true);
+	}
+
+	/**
+	 * Specifies a record identifier to be used with the
+	 * {@link JsonRecordReader}<br>
+	 * <br>
+	 * Must be set if {@link JsonInputFormat#setOneRecordPerLine} is false.
+	 * 
+	 * @param job
+	 *            The job to configure
+	 * @param isOneRecordPerLine
+	 *            True if JSON records are new line delimited, false otherwise.
+	 */
+	public static void setRecordIdentifier(Job job, String record) {
+		job.getConfiguration().set(RECORD_IDENTIFIER, record);
+	}
+
+	/**
+	 * Gets the record identifier
+	 * 
+	 * @param conf
+	 *            the Job configuration
+	 * @return The record identifier or null if not set
+	 */
+	public static String getRecordIdentifier(Configuration conf) {
+		return conf.get(RECORD_IDENTIFIER);
 	}
 }

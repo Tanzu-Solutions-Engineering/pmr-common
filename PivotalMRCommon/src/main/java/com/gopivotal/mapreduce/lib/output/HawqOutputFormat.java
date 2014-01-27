@@ -23,6 +23,11 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.log4j.Logger;
 
+/**
+ * A HAWQ output format that uses a JDBC connection.
+ * @author Adam
+ *
+ */
 public class HawqOutputFormat extends OutputFormat<Text, Object> {
 
 	public static final String DATABASE = "mapreduce.hawq.output.format.database";
@@ -198,7 +203,6 @@ public class HawqOutputFormat extends OutputFormat<Text, Object> {
 			delimiter = HawqOutputFormat.getDelimiter(conf);
 
 			// Parse the types from the configuration
-
 			types = HawqOutputFormat.getColumnTypes(conf);
 
 			// Log the properties

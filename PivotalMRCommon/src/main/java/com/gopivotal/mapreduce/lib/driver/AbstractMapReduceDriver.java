@@ -1,6 +1,10 @@
 package com.gopivotal.mapreduce.lib.driver;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.activity.InvalidActivityException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -9,8 +13,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -22,18 +26,20 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.CombineFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 
-import com.gopivotal.mapreduce.lib.input.CombineTextInputFormat;
+import com.gopivotal.mapreduce.util.PathUtil;
 
 /**
- * An extension of TextInputFormat that will combine files together to make
- * larger input splits.
+ * This class is intended to be extended by basic analytics to provide a number
+ * of basic command line arguments. It is a work in progress.
  */
+@Unstable
 public abstract class AbstractMapReduceDriver extends Configured implements
 		Tool {
 
@@ -48,6 +54,12 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	protected Path outputDir = null;
 	protected int numReducers = 0, numMappers = 0;
 
+	/**
+	 * Parses the command line options, gathering the CSV input paths, output
+	 * directory, and any specified number of mappers and reducers. It then
+	 * builds the job object, calls preJobLaunch, runs the job, then
+	 * postJobCompletion.
+	 */
 	@Override
 	public int run(String[] args) throws Exception {
 
@@ -61,16 +73,16 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 
 		String[] paths = cmd.getOptionValue(INPUT_OPT).split(",");
 
-		input = new Path[paths.length];
-		int i = 0;
-		for (String p : paths) {
-			input[i++] = new Path(p);
-		}
+		List<Path> inputList = new ArrayList<Path>();
+
+		PathUtil.getAllPaths(fs, inputList, paths);
+
+		input = inputList.toArray(new Path[0]);
 
 		if (cmd.hasOption(OUTPUT_OPT)) {
 			outputDir = new Path(cmd.getOptionValue(OUTPUT_OPT));
 		}
-		
+
 		numReducers = Integer.parseInt(cmd.getOptionValue(NUM_REDUCERS_OPT,
 				"-1"));
 		numMappers = Integer.parseInt(cmd.getOptionValue(NUM_MAPPERS_OPT, "0"));
@@ -84,13 +96,18 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 		postJobCompletion(job);
 
 		return code;
-
 	}
 
+	/**
+	 * Builds the base job object.
+	 * 
+	 * @return The built Job
+	 * @throws IOException
+	 */
 	private Job buildBaseJob() throws IOException {
 
 		Job job = Job.getInstance(getConf());
-		job.setJarByClass(AbstractMapReduceDriver.class);
+		job.setJarByClass(getJarByClass());
 
 		FileInputFormat.setInputPaths(job, input);
 
@@ -113,30 +130,58 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 			}
 		}
 
-		job.setInputFormatClass(getInputFormatClass());
-
 		job.setOutputKeyClass(getOutputKeyClass());
 		job.setOutputKeyClass(getOutputValueClass());
 
 		if (numMappers > 0) {
-			job.setInputFormatClass(CombineTextInputFormat.class);
-			CombineTextInputFormat.setMaxInputSplitSize(job,
-					getIdealSplitSize(input, numMappers));
-		}
+			if (getCombineFileInputFormatClass() == null) {
+				throw new InvalidActivityException(
+						"Number of mappers is provided but getCombineFileInputFormatClass() returns null");
+			}
 
-		job.setOutputFormatClass(getOutputFormatClass());
+			job.setInputFormatClass(getCombineFileInputFormatClass());
+			FileInputFormat.setMaxInputSplitSize(job,
+					PathUtil.getIdealSplitSize(fs, input, numMappers));
+		} else {
+			job.setInputFormatClass(getInputFormatClass());
+		}
 
 		return job;
 	}
 
+	protected Class<?> getJarByClass() {
+		return getClass();
+	}
+
+	/**
+	 * Called prior to launching the job
+	 * 
+	 * @param cmd
+	 *            The {@link CommandLine} arguments.
+	 * @param job
+	 *            The job objec to be launched
+	 * @throws Exception
+	 */
 	protected void preJobLaunch(CommandLine cmd, Job job) throws Exception {
 		// empty
 	}
 
+	/**
+	 * Called after the job completes (successful or otherwise).
+	 * 
+	 * @param job
+	 *            The job objec to be launched
+	 * @throws Exception
+	 */
 	protected void postJobCompletion(Job job) {
 		// empty
 	}
 
+	/**
+	 * Called to get any additional options from child classes.
+	 * 
+	 * @return The options, or null if none.
+	 */
 	protected Options getAdditionalOptions() {
 		return new Options();
 	}
@@ -167,6 +212,11 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	}
 
 	@SuppressWarnings("rawtypes")
+	protected Class<? extends CombineFileInputFormat> getCombineFileInputFormatClass() {
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
 	protected Class<? extends WritableComparable> getOutputKeyClass() {
 		return LongWritable.class;
 	}
@@ -192,7 +242,9 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 						"Number of reducers.  Default is based on cluster configuration")
 				.hasArg().withLongOpt("numreducers").create(NUM_REDUCERS_OPT));
 
-		opts.addOption(OptionBuilder.withDescription("CSV list of input")
+		opts.addOption(OptionBuilder
+				.withDescription(
+						"CSV list of input.  Any given directories will be recursed to gather files")
 				.hasArg().isRequired().withLongOpt("input").create(INPUT_OPT));
 
 		opts.addOption(OptionBuilder.withDescription("Output directory")
@@ -205,41 +257,16 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 
 			if (cmd.hasOption(HELP_OPT)) {
 				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("hadoop jar hawq-errorcheck.jar", opts);
+				formatter.printHelp("hadoop jar <jarfile>", opts);
 				return null;
 			} else {
 				return cmd;
 			}
 		} catch (ParseException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("hadoop jar hawq-errorcheck.jar [opts]", opts);
+			formatter.printHelp("hadoop jar <jarfile> [opts]", opts);
 			return null;
 		}
-	}
-
-	private long getIdealSplitSize(Path[] input, int numMapTasks)
-			throws IOException {
-
-		long size = 0;
-
-		for (Path status : input) {
-			size += getIdealSplitSizeHelper(fs.getFileStatus(status), 0);
-		}
-
-		return (long) ((float) size / (float) numMapTasks);
-	}
-
-	private long getIdealSplitSizeHelper(FileStatus path, long accum)
-			throws IOException {
-
-		if (path.isFile()) {
-			accum += path.getLen();
-		} else {
-			for (FileStatus status : fs.listStatus(path.getPath())) {
-				accum += getIdealSplitSizeHelper(status, accum);
-			}
-		}
-		return accum;
 	}
 }
