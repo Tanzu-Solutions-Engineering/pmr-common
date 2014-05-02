@@ -14,7 +14,6 @@ import org.apache.hadoop.mapreduce.lib.input.CombineFileInputFormat;
 import org.apache.hadoop.util.ToolRunner;
 
 import com.gopivotal.mapreduce.lib.driver.AbstractMapReduceDriver;
-import com.gopivotal.mapreduce.lib.input.CombineJsonInputFormat;
 
 /**
  * This class will bulk load an HBase table of tweets and then bulk load an
@@ -70,7 +69,8 @@ public class TwitterBulkLoad extends AbstractMapReduceDriver {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected Class<? extends CombineFileInputFormat> getCombineFileInputFormatClass() {
-		return CombineJsonInputFormat.class;
+		//TODO
+		return null;//CombineJsonInputFormat.class;
 	}
 
 	@Override

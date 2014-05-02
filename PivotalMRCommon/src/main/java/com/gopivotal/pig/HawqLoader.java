@@ -20,6 +20,7 @@ import org.apache.pig.impl.util.UDFContext;
 import com.pivotal.hawq.mapreduce.HAWQInputFormat;
 import com.pivotal.hawq.mapreduce.HAWQRecord;
 import com.pivotal.hawq.mapreduce.conf.HAWQConfiguration;
+import com.pivotal.hawq.mapreduce.metadata.MetadataAccessor;
 
 /**
  * The HawqLoader class wraps the HAWQInputFormat. It converts HAWQRecord
@@ -331,10 +332,20 @@ public class HawqLoader extends LoadFunc implements LoadMetadata {
 			// Remove the HAWQ scheme
 			this.dbUrl = location.replaceAll("hawq://", "");
 			try {
-				MetadataSQLAccessor accessor;
+
 				// Get the metadata schema and run it through the converter
-			//	schema = HawqPigDataConverter.toPigSchema(new Metadata(dbUrl,
-			//			username, password, tablename).getSchema());
+				MetadataAccessor accessor = MetadataAccessor
+						.newInstanceUsingJDBC(dbUrl, username, password,
+								tablename);
+
+				switch (accessor.getTableFormat()) {
+				case AO:
+					schema = HawqPigDataConverter.toPigSchema(accessor
+							.getAOMetadata().getSchema());
+					break;
+				default:
+					throw new IOException("Only AO tables are supported");
+				}
 			} catch (Exception e) {
 				throw new IOException("Failed to convert schema", e);
 			}

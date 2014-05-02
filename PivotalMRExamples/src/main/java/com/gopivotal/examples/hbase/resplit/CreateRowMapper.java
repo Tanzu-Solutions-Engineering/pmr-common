@@ -17,6 +17,7 @@ public class CreateRowMapper extends
 
 	private ImmutableBytesWritable outkey = new ImmutableBytesWritable();
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void map(ImmutableBytesWritable key, Result value, Context context)
 			throws IOException, InterruptedException {

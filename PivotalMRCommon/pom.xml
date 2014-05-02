@@ -4,7 +4,14 @@
 	<groupId>com.gopivotal</groupId>
 	<artifactId>pmr-common</artifactId>
 	<version>1.0.0</version>
-
+	
+	<properties>
+		<hadoop-version>2.2.0-gphd-3.0.1.0</hadoop-version>
+		<hbase-version>0.96.0-hadoop2-gphd-3.0.1.0</hbase-version>
+		<pig-version>0.12.0-gphd-3.0.1.0</pig-version>
+		<hawq-version>1.2.0.1</hawq-version>
+	</properties>
+	
 	<repositories>
 		<repository>
 			<id>org.springsource.maven.milestone</id>
@@ -59,62 +66,62 @@
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-common</artifactId>
-			<version>2.2.0-gphd-3.0.0.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-hdfs</artifactId>
-			<version>2.2.0-gphd-3.0.0.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-core</artifactId>
-			<version>2.2.0-gphd-3.0.0.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-mapreduce-client-common</artifactId>
-			<version>2.2.0-gphd-3.0.0.0</version>
+			<version>${hadoop-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-common</artifactId>
-			<version>0.96.0-hadoop2-gphd-3.0.0.0</version>
+			<version>${hbase-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-server</artifactId>
-			<version>0.96.0-hadoop2-gphd-3.0.0.0</version>
+			<version>${hbase-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
-			<version>0.96.0-hadoop2-gphd-3.0.0.0</version>
+			<version>${hbase-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-hadoop2-compat</artifactId>
-			<version>0.96.0-hadoop2-gphd-3.0.0.0</version>
+			<version>${hbase-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.pig</groupId>
 			<artifactId>pig</artifactId>
-			<version>0.12.0-gphd-3.0.0.0</version>
+			<version>${pig-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>hawq-mapreduce-tool</artifactId>
-			<version>1.2.1.0</version>
+			<version>${hawq-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>hawq-mapreduce-common</artifactId>
-			<version>1.2.1.0</version>
+			<version>${hawq-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.gopivotal</groupId>
 			<artifactId>hawq-mapreduce-ao</artifactId>
-			<version>1.2.1.0</version>
+			<version>${hawq-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.pig</groupId>

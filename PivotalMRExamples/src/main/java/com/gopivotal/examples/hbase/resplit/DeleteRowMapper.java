@@ -1,6 +1,7 @@
 package com.gopivotal.examples.hbase.resplit;
 
 import java.io.IOException;
+
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -16,6 +17,7 @@ public class DeleteRowMapper extends
 
 	private ImmutableBytesWritable outkey = new ImmutableBytesWritable();
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void map(ImmutableBytesWritable key, Result value, Context context)
 			throws IOException, InterruptedException {
