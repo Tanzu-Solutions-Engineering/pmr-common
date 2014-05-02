@@ -1,6 +1,7 @@
 package com.gopivotal.examples.hbase.resplit;
 
 import java.io.IOException;
+
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -21,7 +22,7 @@ public class CreateRowMapper extends
 			throws IOException, InterruptedException {
 
 		// if this is a create tweet, i.e. there is no delete flag
-		if (value.getColumnLatest(TwitterHBaseModel.COLUMN_FAMILY,
+		if (value.getColumnLatestCell(TwitterHBaseModel.COLUMN_FAMILY,
 				TwitterHBaseModel.IS_DELETED_CQ) == null) {
 			for (KeyValue kv : value.raw()) {
 				outkey.set(kv.getRow());

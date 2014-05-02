@@ -1,8 +1,21 @@
 HAWQ Ingest Tool
 ==========
 <p>
-This utility accepts a delimited data set and uses MapReduce and a JDBC connection to write to a HAWQ table in parallel.  The tool can be extended to write custom mapper implementations versus a delimited flat file.
+This library of examples are collected to demonsrtate some advanced MapReduce analytics.
 
+The contentx include:
+
+
+
+<dl>
+  <dt>TwitterBulkLoad</dt>
+  <dd>An example that bulk loads a Twitter JSON data set into an HBase table called 'tweets'.</dd>
+  <dt>HawqIngestTool</dt>
+  <dd>A MapReduce analytic to push rows of data from HDFS files to PostgreSQL JDBC driver.  Not intended to be faster than gpfdist or PXF.</dd>
+  <dt>HBase Table Migration</dt>
+  <dd>This project is an example of a few different classes and command line utilities to migrate an HBase table between two clusters.</dd>
+</dl>
+This utility accepts a delimited data set and uses MapReduce and a JDBC connection to write to a HAWQ table in parallel.  The tool can be extended to write custom mapper implementations versus a delimited flat file.
 The default delimiter is a pipe '|', but can be set to anything via the command line.
 
 ```sh

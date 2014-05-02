@@ -109,7 +109,7 @@ public class TwitterKeyValueMapper extends
 	 */
 	private void writeKeyValue(Context context, KeyValue kv)
 			throws IOException, InterruptedException {
-		outkey.set(kv.getRow());
+		outkey.set(kv.getRowArray());
 		context.write(outkey, kv);
 	}
 }

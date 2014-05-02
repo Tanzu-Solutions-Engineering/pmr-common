@@ -21,7 +21,7 @@ public class DeleteRowMapper extends
 			throws IOException, InterruptedException {
 
 		// if this is a delete tweet, i.e. there is a delete flag
-		if (value.getColumnLatest(TwitterHBaseModel.COLUMN_FAMILY,
+		if (value.getColumnLatestCell(TwitterHBaseModel.COLUMN_FAMILY,
 				TwitterHBaseModel.IS_DELETED_CQ) != null) {
 			for (KeyValue kv : value.raw()) {
 				outkey.set(kv.getRow());

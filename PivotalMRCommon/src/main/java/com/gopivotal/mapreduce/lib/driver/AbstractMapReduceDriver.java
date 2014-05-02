@@ -132,6 +132,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 
 		job.setOutputKeyClass(getOutputKeyClass());
 		job.setOutputKeyClass(getOutputValueClass());
+		job.setOutputFormatClass(getOutputFormatClass());
 
 		if (numMappers > 0) {
 			if (getCombineFileInputFormatClass() == null) {

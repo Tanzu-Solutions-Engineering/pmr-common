@@ -12,6 +12,7 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Scan;
@@ -211,7 +212,7 @@ public class TwitterTableSplit extends Configured implements Tool {
 
 		System.out.println("Creating table " + tableName);
 
-		HTableDescriptor newTable = new HTableDescriptor(tableName);
+		HTableDescriptor newTable = new HTableDescriptor(TableName.valueOf(tableName));
 		newTable.addFamily(new HColumnDescriptor(
 				TwitterHBaseModel.COLUMN_FAMILY));
 
