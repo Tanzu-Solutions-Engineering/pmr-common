@@ -106,7 +106,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	 */
 	private Job buildBaseJob() throws IOException {
 
-		Job job = Job.getInstance(getConf());
+		Job job = Job.getInstance(getConf(), getJobName());
 		job.setJarByClass(getJarByClass());
 
 		FileInputFormat.setInputPaths(job, input);
@@ -121,7 +121,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 			job.setCombinerClass(getCombinerClass());
 		}
 
-		if (getReducerClass() == null) {
+		if (isMapOnly() || getReducerClass() == null) {
 			job.setNumReduceTasks(0);
 		} else {
 			job.setReducerClass(getReducerClass());
@@ -177,6 +177,10 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 		// empty
 	}
 
+	protected String getJobName() {
+		return "Default Job";
+	}
+
 	/**
 	 * Called to get any additional options from child classes.
 	 * 
@@ -184,6 +188,10 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	 */
 	protected Options getAdditionalOptions() {
 		return new Options();
+	}
+
+	protected boolean isMapOnly() {
+		return false;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -226,29 +234,39 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	}
 
 	@SuppressWarnings("static-access")
-	protected CommandLine parseCommandLine(String[] args) {
+	protected CommandLine parseCommandLine(String[] args)
+			throws IllegalArgumentException, InstantiationException,
+			IllegalAccessException {
 
 		Options opts = getAdditionalOptions();
 
 		opts.addOption(OptionBuilder.withDescription("Print this help message")
 				.withLongOpt(HELP_OPT).create());
 
-		opts.addOption(OptionBuilder
-				.withDescription(
-						"Specifying this parameter will combine blocks into a set number of map tasks ")
-				.hasArg().withLongOpt("nummappers").create(NUM_MAPPERS_OPT));
-		opts.addOption(OptionBuilder
-				.withDescription(
-						"Number of reducers.  Default is based on cluster configuration")
-				.hasArg().withLongOpt("numreducers").create(NUM_REDUCERS_OPT));
+		if (getCombineFileInputFormatClass() != null) {
+			opts.addOption(OptionBuilder
+					.withDescription(
+							"Specifying this parameter will combine blocks into a set number of map tasks")
+					.hasArg().withLongOpt("nummappers").create(NUM_MAPPERS_OPT));
+		}
+
+		if (!isMapOnly()) {
+			opts.addOption(OptionBuilder
+					.withDescription(
+							"Number of reducers.  Default is based on cluster configuration")
+					.hasArg().withLongOpt("numreducers")
+					.create(NUM_REDUCERS_OPT));
+		}
 
 		opts.addOption(OptionBuilder
 				.withDescription(
 						"CSV list of input.  Any given directories will be recursed to gather files")
 				.hasArg().isRequired().withLongOpt("input").create(INPUT_OPT));
 
-		opts.addOption(OptionBuilder.withDescription("Output directory")
-				.hasArg().withLongOpt("output").create(OUTPUT_OPT));
+		if (getOutputFormatClass().newInstance() instanceof FileOutputFormat) {
+			opts.addOption(OptionBuilder.withDescription("Output directory")
+					.hasArg().withLongOpt("output").create(OUTPUT_OPT));
+		}
 
 		CommandLineParser parser = new GnuParser();
 
