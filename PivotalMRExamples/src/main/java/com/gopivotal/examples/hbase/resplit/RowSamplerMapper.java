@@ -38,7 +38,7 @@ public class RowSamplerMapper extends TableMapper<Text, Text> {
 			throws IOException, InterruptedException {
 
 		// if this is a create tweet and we are below our emit threshold
-		if (value.getColumnLatest(TwitterHBaseModel.COLUMN_FAMILY,
+		if (value.getColumnLatestCell(TwitterHBaseModel.COLUMN_FAMILY,
 				TwitterHBaseModel.IS_DELETED_CQ) == null
 				&& rndm.nextDouble() < sampleRate) {
 

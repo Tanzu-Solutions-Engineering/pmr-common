@@ -1,9 +1,9 @@
 pmr-common
 ==========
 <p>
-A common library of MapReduce utilities and code, built against the latest GA release of Pivotal HD.
+A common library of MapReduce utilities and code, built against Pivotal HD.  Use at your own risk.
 
-All projects and utilities must be built using Maven.
+All projects and utilities must be built using Maven.  If you are developing on a system that has PHD installed, you can run the add-mvn-dependencies shell script to add dependencies to your local Maven repository.  The JARs are pulled from the default installation path of Pivotal HD.
 
 See the README under each project for more information.  Current contents includes:
 

@@ -38,8 +38,8 @@ public class HawqIngestTool extends AbstractMapReduceDriver {
 		int port = Integer.parseInt(cmd.getOptionValue(PORT_OPT));
 		String database = cmd.getOptionValue(DATABASE_OPT);
 		String table = cmd.getOptionValue(TABLE_OPT);
-		String user = cmd.getOptionValue(USER_OPT, null);
-		String password = cmd.getOptionValue(PASSWORD_OPT, null);
+		String user = cmd.getOptionValue(USER_OPT);
+		String password = cmd.getOptionValue(PASSWORD_OPT);
 
 		// Create the connect string and SQL statement
 		String url = "jdbc:postgresql://" + host + ":" + port + "/" + database;
@@ -50,10 +50,11 @@ public class HawqIngestTool extends AbstractMapReduceDriver {
 		HawqOutputFormat.setDelimiter(job,
 				cmd.getOptionValue(DELIMITER_OPT, "\\|"));
 		HawqOutputFormat.setHost(job, host);
-		HawqOutputFormat.setPassword(job, password);
 		HawqOutputFormat.setPort(job, port);
 		HawqOutputFormat.setTable(job, table);
+
 		HawqOutputFormat.setUser(job, user);
+		HawqOutputFormat.setPassword(job, password);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -105,9 +106,9 @@ public class HawqIngestTool extends AbstractMapReduceDriver {
 		opts.addOption(OptionBuilder.withDescription("HAWQ table").hasArg()
 				.isRequired().withLongOpt("table").create(TABLE_OPT));
 		opts.addOption(OptionBuilder.withDescription("HAWQ username").hasArg()
-				.withLongOpt("user").create(USER_OPT));
+				.isRequired().withLongOpt("user").create(USER_OPT));
 		opts.addOption(OptionBuilder.withDescription("HAWQ password").hasArg()
-				.withLongOpt("password").create(PASSWORD_OPT));
+				.isRequired().withLongOpt("password").create(PASSWORD_OPT));
 
 		opts.addOption(OptionBuilder
 				.withDescription(

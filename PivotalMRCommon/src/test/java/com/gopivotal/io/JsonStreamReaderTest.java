@@ -17,6 +17,7 @@ public class JsonStreamReaderTest {
 	@Before
 	public void setup() throws FileNotFoundException {
 		rdr = new JsonStreamReader("menuitem", new FileInputStream(FILE));
+
 	}
 
 	@Test

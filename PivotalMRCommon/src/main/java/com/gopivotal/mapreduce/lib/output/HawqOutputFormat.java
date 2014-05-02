@@ -25,8 +25,6 @@ import org.apache.log4j.Logger;
 
 /**
  * A HAWQ output format that uses a JDBC connection.
- * @author Adam
- *
  */
 public class HawqOutputFormat extends OutputFormat<Text, Object> {
 
@@ -180,9 +178,9 @@ public class HawqOutputFormat extends OutputFormat<Text, Object> {
 
 		private Connection client = null;
 		private PreparedStatement insert = null;
-		
+
 		public HawqRecordWriter(Configuration conf) {
-			
+
 			try {
 				// Load JDBC driver for Postgres
 				Class.forName("org.postgresql.Driver");
@@ -226,17 +224,17 @@ public class HawqOutputFormat extends OutputFormat<Text, Object> {
 		@Override
 		public void close(TaskAttemptContext context) throws IOException,
 				InterruptedException {
-				LOG.info("Pushing the batch and closing client.");
+			LOG.info("Pushing the batch and closing client.");
 
-				try {
-					insert.executeBatch();
-					client.commit();
-					insert.close();
-					client.close();
-				} catch (SQLException e) {
-					LOG.error(e);
-					throw new IOException(e);
-				}			
+			try {
+				insert.executeBatch();
+				client.commit();
+				insert.close();
+				client.close();
+			} catch (SQLException e) {
+				LOG.error(e);
+				throw new IOException(e);
+			}
 		}
 
 		@Override
