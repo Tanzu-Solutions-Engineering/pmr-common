@@ -8,4 +8,4 @@ This MapReduce library contains a number of classes that can be extended or othe
 * HDFS Path utilities
 * HAWQ Pig Loader
 
-See the JavaDoc [here](http://pivotal-field-engineering.github.io/pmr-common/doc) for details on all classes.
+See the documentation [here](http://pivotal-field-engineering.github.io/pmr-common/ for details.

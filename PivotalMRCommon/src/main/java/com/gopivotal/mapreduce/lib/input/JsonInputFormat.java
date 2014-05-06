@@ -29,7 +29,7 @@ import com.gopivotal.io.JsonStreamReader;
 /**
  * The JsonInputFormat will read two types of JSON formatted data. The default
  * expectation is each JSON record is newline delimited. This method is
- * generally faster and is backed by the {@link LineRecordReader) you are likely
+ * generally faster and is backed by the {@link LineRecordReader} you are likely
  * familiar with. The other method is 'pretty print' of JSON records, where
  * records span multiple lines and often have some type of root identifier. This
  * method is likely slower, but respects record boundaries much like the
@@ -267,8 +267,8 @@ public class JsonInputFormat extends FileInputFormat<Text, NullWritable> {
 	 * 
 	 * @param job
 	 *            The job to configure
-	 * @param isOneRecordPerLine
-	 *            True if JSON records are new line delimited, false otherwise.
+	 * @param record
+	 *            The record identifier
 	 */
 	public static void setRecordIdentifier(Job job, String record) {
 		job.getConfiguration().set(RECORD_IDENTIFIER, record);

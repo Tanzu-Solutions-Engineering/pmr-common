@@ -3,9 +3,7 @@ HAWQ Ingest Tool
 <p>
 This library of examples are collected to demonsrtate some advanced MapReduce analytics.
 
-The contentx include:
-
-
+The content include:
 
 <dl>
   <dt>TwitterBulkLoad</dt>

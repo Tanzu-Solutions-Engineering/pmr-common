@@ -28,19 +28,19 @@ import com.pivotal.hawq.mapreduce.metadata.MetadataAccessor;
  * convert the HAWQ table definition to a Pig schema. Details on what data types
  * map to which fields are below. Arrays are not currently supported.<br>
  * <br>
- * First and foremost, users <b>must</b> disable Pig's split combination
- * optimizer. This restriction will be lifted in the future. You do this by
- * adding &quot;SET pig.splitCombination false&quot; at the top of your Pig
+ * First and foremost, <b>users must disable Pig's split combination
+ * optimizer</b>. This restriction will be lifted in the future. You do this by
+ * adding &quot;SET pig.splitCombination false;&quot; at the top of your Pig
  * script or when you enter the grunt shell. <br>
  * <br>
- * The HawqLoader path is "hawq://<hawq_master>:&lt;port&gt;/database".<br>
+ * The HawqLoader path is "hawq://<hawq_master>:&lt;port&gt;/&lt;database&gt;".<br>
  * <br>
  * The HawqLoader has three parameters. The table name (required) and then the
  * username and password (optional).<br>
  * <br>
  * An example is below. You can, of course, use command line parameters for any
  * of the options as well as the location string.<br>
- * 
+ * <br>
  * <pre>
  * SET pig.splitCombination false;
  * A = LOAD 'hawq://mdw1:5432/gpadmin' USING com.gopivotal.pig.HawqLoader('retail_demo.products_dim', 'gpadmin');
@@ -56,7 +56,7 @@ import com.pivotal.hawq.mapreduce.metadata.MetadataAccessor;
  * Below is a table describing the mappings from HAWQ to Java to Pig types. <br>
  * <br>
  * <table>
- * <thead>
+ * <thead align="left">
  * <tr>
  * <th>HAWQ Type</th>
  * <th>Java Type</th>
