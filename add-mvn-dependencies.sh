@@ -29,6 +29,8 @@ fi
 
 PACKAGING=jar
 
+: <<'END'
+
 mvn install:install-file -Dfile=$HADOOP_ROOT/hadoop-common-$HADOOP_VERSION.jar -DgroupId=org.apache.hadoop -DartifactId=hadoop-common -Dversion=$HADOOP_VERSION -Dpackaging=jar &> /dev/null
 if [[ $? -ne 0 ]]; then echo "Failed to install $HADOOP_ROOT/hadoop-common-$HADOOP_VERSION.jar... Does it exist?  Exiting."; exit 1; fi
 
@@ -58,6 +60,8 @@ if [[ $? -ne 0 ]]; then echo "Failed to install $HIVE_ROOT/hive-serde-$HIVE_VERS
 
 mvn install:install-file -Dfile=$PIG_ROOT/pig-$PIG_VERSION.jar -DgroupId=org.apache.pig -DartifactId=pig -Dversion=$PIG_VERSION -Dpackaging=jar &> /dev/null
 if [[ $? -ne 0 ]]; then echo "Failed to install $PIG_ROOT/pig-$PIG_VERSION.jar... Does it exist?  Exiting."; exit 1; fi
+
+END
 
 mvn install:install-file -Dfile=$HAWQ_ROOT/hawq-mapreduce-tool.jar -DgroupId=com.gopivotal -DartifactId=hawq-mapreduce-tool -Dversion=$HAWQ_VERSION -Dpackaging=jar &> /dev/null
 if [[ $? -ne 0 ]]; then echo "Failed to install $HAWQ_ROOT/hawq-mapreduce-tool.jar... Does it exist?  Exiting."; exit 1; fi
