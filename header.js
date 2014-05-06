@@ -1,0 +1,18 @@
+
+document.write("<header>"
++ "        <h1>PXF</h1>"
++ "        <p>Prototype PXF extensions for HAWQ</p>"
++ "        <p class=\"view\"><a href=\"https://github.com/Pivotal-Field-Engineering/pxf-field\">View the Project on GitHub <small>Pivotal-Field-Engineering/pxf-field</small></a></p>"
++ "        <ul>"
++ "          <li><a href=\"https://github.com/Pivotal-Field-Engineering/pxf-field/zipball/master\">Download <strong>ZIP File</strong></a></li>"
++ "          <li><a href=\"https://github.com/Pivotal-Field-Engineering/pxf-field/tarball/master\">Download <strong>TAR Ball</strong></a></li>"
++ "          <li><a href=\"https://github.com/Pivotal-Field-Engineering/pxf-field\">View On <strong>GitHub</strong></a></li>"
++ "        </ul>"
++ "		<br/><br/>"        
++ "		<p><a href=\"index.html\">Home</a><br/>"
++ "		<br/>"
++ "		Links<br/>"
++ "		<a href=\"pmr/apidocs/index.html\">PMR JavaDoc</a><br/>"
++ "		<a href=\"pmr/apidocs/index.html?com/gopivotal/pig/HawqLoader.html\">Pig HAWQ Loader</a><br/>"
++ "		</p>"
++ "      </header>");

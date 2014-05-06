@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Pivotal MapReduce Common Library and Utilities</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">      
+      <script type="text/javascript" src="header.js"> </script>
+      <section>
+        
+		
+<h3>Welcome to the PMR library for Pivotal HD!</h3>
+
+<p>
+As a means to share knowledge, code, and save time (I hear it = money), the following pages are a collective effort to maintain commonly used Java MapReduce tools and utilities for Pivotal HD.  Feel free to add and collaborate, and use at your own risk :)
+</p>
+<p>
+PMR is hosted in the pmr-common GitHub repository for the Pivotal Field Engineering organization.  You can clone this directly using the below command.
+</p>
+<p><code>
+git clone https://github.com/Pivotal-Field-Engineering/pmr-common.git
+</code>
+</p>
+<p>
+The library is then built using <a href="http://maven.apache.org">Apache Maven</a>.  Some dependencies for PHD are not yet in a Maven repository, but they can be installed manually using the provided <code>add-mvn-dependencies.sh</code> script.  If building on a machine that has Pivotal HD installed, you can just run it.  The needed jars are pulled from the default installation location of PHD.  If not, you can put the needed jar files into a local 'lib' directory, change a flag, and then install.
+<p>
+<code>
+# If on a PHD machine<br>
+cd pmr-common/<br>
+sh add-mvn-dependencies.sh<br>
+<br>
+# If not on a PHD machine<br>
+cd pmr-common/<br>
+mkdir lib<br>
+# Copy jars into lib<br>
+# Modify add-mvn-dependencies to uncomment LIB_DIR<br>
+sh add-mvn-dependencies.sh
+</code>
+</p>
+<p>
+You can then build and install PivotalMRCommon, and then any desired examples/tools (if any).
+</p>
+<p>
+<code>
+cd pmr-common/PivotalMRCommon<br>
+mvn clean install
+</code>
+</p>
+<p>
+The built jar file can be added using the following Maven dependency:
+</p>
+<p>
+<code>
+&lt;dependency&gt;<br>
+&nbsp;&nbsp;&lt;groupId&gt;com.gopivotal&lt;/groupId&gt;<br>
+&nbsp;&nbsp;&lt;artifactId&gt;pmr-common&lt;/artifactId&gt;<br>
+&nbsp;&nbsp;&lt;version&gt;2.0.1&lt;/version&gt;<br>
+&lt;/dependency&gt;
+</code>
+</p>
+<p>
+Please use the links to the left to navigate further
+</p>
+</section>
+
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Pivotal-Field-Engineering">Pivotal-Field-Engineering</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
