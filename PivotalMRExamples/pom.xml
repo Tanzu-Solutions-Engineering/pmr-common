@@ -27,6 +27,13 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>com.gopivotal:pmr-common</include>
+						</includes>
+					</artifactSet>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

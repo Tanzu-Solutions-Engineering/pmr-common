@@ -53,6 +53,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 	protected Path[] input = null;
 	protected Path outputDir = null;
 	protected int numReducers = 0, numMappers = 0;
+	private boolean myNumMappers = false;
 
 	/**
 	 * Parses the command line options, gathering the CSV input paths, output
@@ -71,13 +72,12 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 
 		fs = FileSystem.get(getConf());
 
-		String[] paths = cmd.getOptionValue(INPUT_OPT).split(",");
-
-		List<Path> inputList = new ArrayList<Path>();
-
-		PathUtil.getAllPaths(fs, inputList, paths);
-
-		input = inputList.toArray(new Path[0]);
+		if (cmd.hasOption(INPUT_OPT)) {
+			String[] paths = cmd.getOptionValue(INPUT_OPT).split(",");
+			List<Path> inputList = new ArrayList<Path>();
+			PathUtil.getAllPaths(fs, inputList, paths);
+			input = inputList.toArray(new Path[0]);
+		}
 
 		if (cmd.hasOption(OUTPUT_OPT)) {
 			outputDir = new Path(cmd.getOptionValue(OUTPUT_OPT));
@@ -109,7 +109,9 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 		Job job = Job.getInstance(getConf(), getJobName());
 		job.setJarByClass(getJarByClass());
 
-		FileInputFormat.setInputPaths(job, input);
+		if (input != null) {
+			FileInputFormat.setInputPaths(job, input);
+		}
 
 		if (outputDir != null) {
 			FileOutputFormat.setOutputPath(job, outputDir);
@@ -134,7 +136,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 		job.setOutputKeyClass(getOutputValueClass());
 		job.setOutputFormatClass(getOutputFormatClass());
 
-		if (numMappers > 0) {
+		if (myNumMappers && numMappers > 0) {
 			if (getCombineFileInputFormatClass() == null) {
 				throw new InvalidActivityException(
 						"Number of mappers is provided but getCombineFileInputFormatClass() returns null");
@@ -249,6 +251,7 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 					.withDescription(
 							"Specifying this parameter will combine blocks into a set number of map tasks")
 					.hasArg().withLongOpt("nummappers").create(NUM_MAPPERS_OPT));
+			myNumMappers = true;
 		}
 
 		if (!isMapOnly()) {
@@ -259,10 +262,13 @@ public abstract class AbstractMapReduceDriver extends Configured implements
 					.create(NUM_REDUCERS_OPT));
 		}
 
-		opts.addOption(OptionBuilder
-				.withDescription(
-						"CSV list of input.  Any given directories will be recursed to gather files")
-				.hasArg().isRequired().withLongOpt("input").create(INPUT_OPT));
+		if (getInputFormatClass().newInstance() instanceof FileInputFormat) {
+			opts.addOption(OptionBuilder
+					.withDescription(
+							"CSV list of input.  Any given directories will be recursed to gather files")
+					.hasArg().isRequired().withLongOpt("input")
+					.create(INPUT_OPT));
+		}
 
 		if (getOutputFormatClass().newInstance() instanceof FileOutputFormat) {
 			opts.addOption(OptionBuilder.withDescription("Output directory")
