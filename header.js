@@ -14,7 +14,7 @@ document.write("<header>"
 + "		Links<br/>"
 + "		<a href=\"versioning.html\">PMR Versioning</a><br/>"
 + "		<a href=\"pmr/apidocs/index.html\">PMR JavaDoc</a><br/>"
-+ "		<a href=\"pmre/apidocs/index.html\">PMR JavaDoc</a><br/>"
++ "		<a href=\"pmre/apidocs/index.html\">PMRExamples JavaDoc</a><br/>"
 + "		<a href=\"pmr/apidocs/index.html?com/gopivotal/pig/HawqLoader.html\">Pig HAWQ Loader</a><br/>"
 + "		</p>"
 + "      </header>");
