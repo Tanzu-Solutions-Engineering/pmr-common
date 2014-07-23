@@ -1,8 +1,0 @@
-com.gopivotal.hive.serde
-com.gopivotal.io
-com.gopivotal.mapred.input
-com.gopivotal.mapreduce.lib.driver
-com.gopivotal.mapreduce.lib.input
-com.gopivotal.mapreduce.lib.output
-com.gopivotal.mapreduce.util
-com.gopivotal.pig

@@ -21,7 +21,33 @@
 <h3>Welcome to the PMR library for Pivotal HD!</h3>
 
 <p>
-As a means to share knowledge, code, and save time (I hear it = money), the following pages are a collective effort to maintain commonly used Java MapReduce tools and utilities for Pivotal HD.  Feel free to add and collaborate, and use at your own risk :)
+As a means to share knowledge, code, and save time (I hear it = money), Pivotal MapReduce Common (PMR) is an effort to maintain commonly used Java MapReduce tools and utilities for Pivotal HD.  Feel free to send pull requests and collaborate, and use at your own risk :)
+</p>
+<p>
+PMR contains the following features and capabilities:
+<br/><br/>
+<font size="3"><b><i>Input and Output Formats</i></b></font>
+<ul>
+  <li><b>CombineTextInputFormat</b><br/>An extension of TextInputFormat that batches files together to pack multiple blocks into a specified number of map tasks.</li>
+  <li><b>JsonInputFormat/CombineJsonInputFormat</b><br/>Splittable input formats to read JSON data, either one record per line or &quot;pretty print&quot;.  The combine input format will batches files together to pack multiple blocks into a specified number of map tasks.</li>
+  <li><b>WholeFileInputFormat/CombineWholeFileInputFormat</b><br/>An input format that reads an entire file as a single key/value pair, with the key as the file name and the value as the bytes of the file.  This creates one map task per file.  The combine input format will batches files together to pack multiple blocks into a specified number of map tasks.</li>
+  <li><b>DummyInputFormat</b><br/>An input format that does nothing.  Users specify the number of map tasks to create, and it will pass a single key/value pair of NullWritables to a map task before completing.  The opposite of this is the NullOutputFormat, which is already shipped with Hadoop.  This output format ignores all output key/value pairs and generates no files.</li>
+  <li><b>HawqOutputFormat</b><br/>An output format that uses a JDBC connection to write a row of data to HAWQ.  The key of the output is the row of data, delimited by a configurable delimiter.  The output format splits on this delimiter to generate an INSERT statement, which is then written to HAWQ.  <b>Not intended to be faster than gpfdist or PXF</b>, but reasonable to use for small data sets to skip the extra step.</li>
+  <li><b>Pig HawqLoader</b><br/>A Pig StoreFunc that can be used to write Pig jobs against HAWQ tables.  Usage can be found in the <a href="pmr/apidocs/index.html?com/gopivotal/pig/HawqLoader.html">Java Doc</a></li>
+</ul>
+
+<font size="3"><b><i>Utilities</i></b></font>
+<ul>
+  <li><b>HawqIngestTool</b><br/>A MapReduce analytic to push rows of data from HDFS files to PostgreSQL JDBC driver. <b>Not intended to be faster than gpfdist or PXF</b>, but reasonable to use for small data sets to skip the extra step.</li>
+</ul>
+
+<font size="3"><b><i>Examples</i></b></font>
+<br>
+The PivotalMRExamples project contains tools and code examples which leverage some of the classes in PMR.
+<ul>
+  <li><b>HBase</b><br/>Examples demonstrating bulk load, re-splitting tables, and a simple HBase application.</li>
+  <li><b>SleepDriver</b><br/>An example MapReduce job which starts a configurable number of map tasks for a configurable number of seconds</li>
+</ul>
 </p>
 <p>
 PMR is hosted in the pmr-common GitHub repository for the Pivotal Field Engineering organization.  You can clone this directly using the below command.
