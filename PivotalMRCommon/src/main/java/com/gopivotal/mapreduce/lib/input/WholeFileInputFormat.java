@@ -15,6 +15,12 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 
+/**
+ * A {@link FileInputFormat} implementation that passes the file name as the key
+ * and the bytes of the file as the value. Generates one map task per file, but
+ * the {@link CombineWholeFileInputFormat} could be used to batch them together
+ * into a configurable number of map tasks.
+ */
 public class WholeFileInputFormat extends FileInputFormat<Text, BytesWritable> {
 
 	@Override

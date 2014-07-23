@@ -16,6 +16,11 @@ import org.apache.hadoop.util.ToolRunner;
 import com.gopivotal.mapreduce.lib.driver.AbstractMapReduceDriver;
 import com.gopivotal.mapreduce.lib.input.DummyInputFormat;
 
+/**
+ * This sleepy MapReduce job takes in a configurable number of mappers and an
+ * optional amount of time to sleep. The default is infinite, i.e. run until
+ * killed.
+ */
 @SuppressWarnings("rawtypes")
 public class SleepDriver extends AbstractMapReduceDriver {
 
@@ -65,6 +70,11 @@ public class SleepDriver extends AbstractMapReduceDriver {
 	}
 
 	@Override
+	protected String getJobName() {
+		return "Sleep Job - " + System.currentTimeMillis();
+	}
+
+	@Override
 	protected boolean isMapOnly() {
 		return true;
 	}
@@ -77,7 +87,7 @@ public class SleepDriver extends AbstractMapReduceDriver {
 			Mapper<Object, Object, Object, Object> {
 
 		public static final String SLEEP_TIME = "mapreduce.sleepmapper.sleep.time";
-		private long sleepTime = 0L;
+		private long sleepTime = 0L, taskTimeout = 0L;
 
 		public static void setSleepTime(Job job, long timeInMs) {
 			job.getConfiguration().set(SLEEP_TIME, Long.toString(timeInMs));
@@ -91,6 +101,8 @@ public class SleepDriver extends AbstractMapReduceDriver {
 		protected void setup(Context context) throws IOException,
 				InterruptedException {
 			sleepTime = getSleepTime(context.getConfiguration());
+			taskTimeout = context.getConfiguration().getLong(
+					"mapreduce.task.timeout", 600000L);
 		}
 
 		@Override
@@ -98,10 +110,22 @@ public class SleepDriver extends AbstractMapReduceDriver {
 				throws IOException, InterruptedException {
 
 			if (sleepTime > 0) {
-				Thread.sleep(sleepTime);
+				// if we've got a time set, then sleep for that time or
+				// increments of half the task time
+				long leftToSleep = sleepTime;
+				long toSleep = Math.min(leftToSleep, taskTimeout / 2);
+				while (leftToSleep > 0) {
+					Thread.sleep(toSleep);
+					context.progress();
+					leftToSleep -= toSleep;
+					toSleep = Math.min(leftToSleep, taskTimeout / 2);
+				}
 			} else {
+				// Sleep for half of the task timeout and then notify we have
+				// made progress
 				while (true) {
-					Thread.sleep(Long.MAX_VALUE);
+					Thread.sleep(taskTimeout / 2);
+					context.progress();
 				}
 			}
 		}

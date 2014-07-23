@@ -10,14 +10,18 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.CombineFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
 import com.gopivotal.mapreduce.lib.input.WholeFileInputFormat.WholeFileRecordReader;
+import com.gopivotal.mapreduce.util.PathUtil;
 
 /**
- * An extension of WholeFileInputFormat that will combine files together to make
- * larger input splits.
+ * An extension of {@link WholeFileInputFormat} that will combine files together
+ * to make larger input splits.
  * 
  * Use {@link CombineWholeFileInputFormat#setMaxSplitSize(long)} to set the file
  * size, in bytes, that is ideal.
+ * {@link PathUtil#getIdealSplitSize(FileSystem, Path[], int)}
+ * may be helpful.
  */
 public class CombineWholeFileInputFormat extends
 		CombineFileInputFormat<Text, BytesWritable> {

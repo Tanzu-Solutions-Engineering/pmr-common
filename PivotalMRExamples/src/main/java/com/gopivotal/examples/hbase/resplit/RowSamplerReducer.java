@@ -1,6 +1,7 @@
 package com.gopivotal.examples.hbase.resplit;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,6 +10,10 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
+/**
+ * This reducer class sorts all the input values associated with a key and
+ * writes to the appropriate output via MultipleOutputs.
+ */
 public class RowSamplerReducer extends Reducer<Text, Text, Text, NullWritable> {
 
 	private MultipleOutputs<Text, NullWritable> mos = null;

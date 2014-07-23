@@ -10,14 +10,17 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.CombineFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
 import com.gopivotal.mapreduce.lib.input.JsonInputFormat.JsonRecordReader;
 import com.gopivotal.mapreduce.lib.input.JsonInputFormat.SimpleJsonRecordReader;
+import com.gopivotal.mapreduce.util.PathUtil;
 
 /**
  * An extension of JsonInputFormat that will combine files together to make
  * larger input splits.<br>
  * <br>
  * Please use {@link JsonInputFormat} to configure the job appropriately.
+ * {@link PathUtil#getIdealSplitSize(FileSystem, Path[], int)} may be helpful.
  */
 public class CombineJsonInputFormat extends
 		CombineFileInputFormat<Text, NullWritable> {

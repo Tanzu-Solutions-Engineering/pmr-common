@@ -12,12 +12,15 @@ import org.apache.hadoop.mapreduce.lib.input.CombineFileSplit;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
+import com.gopivotal.mapreduce.util.PathUtil;
+
 /**
  * An extension of TextInputFormat that will combine files together to make
  * larger input splits.
  * 
  * Use {@link CombineTextInputFormat#setMaxSplitSize(long)} to set the file
  * size, in bytes, that is ideal.
+ * {@link PathUtil#getIdealSplitSize(FileSystem, Path[], int)} may be helpful.
  */
 public class CombineTextInputFormat extends
 		CombineFileInputFormat<LongWritable, Text> {

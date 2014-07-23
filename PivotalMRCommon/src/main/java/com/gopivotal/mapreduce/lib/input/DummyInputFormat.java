@@ -16,10 +16,14 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
+/**
+ * This input format starts a configurable number of map tasks. Both the key and
+ * value are {@link NullWritable} objects. It outputs a single key/value pair
+ * before closing.
+ */
 public class DummyInputFormat extends InputFormat<NullWritable, NullWritable> {
 
 	public static final String NUM_MAPPERS = "mapreduce.dummyinputformat.num.mappers";
-	public static final String TIME_IN_MS = "mapreduce.dummyinputformat.time.in.ms";
 
 	public static void setNumMappers(Job job, int numMappers) {
 		job.getConfiguration().set(NUM_MAPPERS, Integer.toString(numMappers));
@@ -80,6 +84,7 @@ public class DummyInputFormat extends InputFormat<NullWritable, NullWritable> {
 			RecordReader<NullWritable, NullWritable> {
 
 		private boolean output = false;
+		private boolean finished = false;
 
 		@Override
 		public void initialize(InputSplit arg0, TaskAttemptContext arg1)
@@ -99,7 +104,7 @@ public class DummyInputFormat extends InputFormat<NullWritable, NullWritable> {
 
 		@Override
 		public void close() throws IOException {
-			// nothing to do
+			finished = true;
 		}
 
 		@Override
@@ -116,7 +121,7 @@ public class DummyInputFormat extends InputFormat<NullWritable, NullWritable> {
 
 		@Override
 		public float getProgress() throws IOException, InterruptedException {
-			return output ? 1.0f : 0.0f;
+			return finished ? 1.0f : 0.0f;
 		}
 	}
 }

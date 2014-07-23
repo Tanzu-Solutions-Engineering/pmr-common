@@ -24,7 +24,9 @@ import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.log4j.Logger;
 
 /**
- * A HAWQ output format that uses a JDBC connection.
+ * A HAWQ output format that uses a JDBC connection. Not intended to be faster
+ * than gpfdist or PXF, but instead to ingest small data sets into HAWQ directly
+ * from MapReduce.
  */
 public class HawqOutputFormat extends OutputFormat<Text, Object> {
 

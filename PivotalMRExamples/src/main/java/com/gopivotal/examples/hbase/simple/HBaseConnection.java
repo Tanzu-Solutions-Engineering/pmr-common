@@ -15,6 +15,9 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
+/**
+ * A simple application to demonstrate how to use the HBase APIs.
+ */
 public class HBaseConnection extends Configured implements Tool {
 
 	public static void main(String[] args) throws Exception {
