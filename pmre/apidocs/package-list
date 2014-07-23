@@ -1,0 +1,5 @@
+com.gopivotal.examples.hbase.ingest
+com.gopivotal.examples.hbase.resplit
+com.gopivotal.examples.hbase.simple
+com.gopivotal.examples.hbase.util
+com.gopivotal.examples.mapreduce
